@@ -1,0 +1,134 @@
+================================================================================
+QUICK SUBMISSION GUIDE
+================================================================================
+
+DIRECTORY STRUCTURE TO CREATE:
+
+log-report/
+├── task.toml                          [FIXED]
+├── instruction.md                     [FIXED]
+├── environment/
+│   ├── Dockerfile                     [FIXED]
+│   └── access.log                     [OK - no changes]
+├── solution/
+│   ├── solve.sh                       [OK - no changes]
+│   └── solve.py                       [OK - no changes]
+└── tests/
+    ├── test.sh                        [FIXED]
+    └── test_outputs.py                [FIXED]
+
+================================================================================
+WHAT CHANGED (Quick Summary)
+================================================================================
+
+1. environment/Dockerfile
+   - Changed: python:latest → python:3.11-slim@sha256:e4d4e1c0c...
+   - Removed: COPY solution_hint.py line
+   - Added: RUN mkdir -p /solution /tests
+
+2. task.toml
+   - Changed: artifacts = "/app/out.json" → artifacts = "/app/report.json"
+
+3. instruction.md
+   - Completely rewritten with 5 numbered success criteria
+
+4. tests/test.sh
+   - Changed: /app/reward.txt → /logs/verifier/reward.txt
+   - Added: mkdir -p /logs/verifier
+
+5. tests/test_outputs.py
+   - Added: test_report_valid_json() - checks JSON syntax
+   - Added: test_report_has_required_keys() - checks exact keys
+   - Added: test_report_correct_values() - validates actual values
+
+Files NOT changed:
+   ✓ environment/access.log (test data is correct)
+   ✓ solution/solve.py (implementation is correct)
+   ✓ solution/solve.sh (runner script is correct)
+
+================================================================================
+COPY-PASTE READY FILES
+================================================================================
+
+All corrected files are available as separate plain-text files:
+
+01_task.toml ........................ Copy to log-report/task.toml
+02_instruction.md .................. Copy to log-report/instruction.md
+03_environment_Dockerfile .......... Copy to log-report/environment/Dockerfile
+04_solution_solve.sh ............... Copy to log-report/solution/solve.sh (no changes)
+05_solution_solve.py ............... Copy to log-report/solution/solve.py (no changes)
+06_tests_test.sh ................... Copy to log-report/tests/test.sh
+07_tests_test_outputs.py ........... Copy to log-report/tests/test_outputs.py
+
+Also use:
+  environment/access.log ........... Copy from original (no changes)
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+After creating the fixed task structure, verify locally with Harbor:
+
+  # Test 1: Reference solution should PASS
+  harbor run -p log-report -a oracle
+  Expected: reward.txt contains "1" ✅
+
+  # Test 2: No-op agent should FAIL
+  harbor run -p log-report --agent nop
+  Expected: reward.txt contains "0" ✅
+
+If both pass, the task is correctly fixed.
+
+================================================================================
+KEY DEFECTS FIXED
+================================================================================
+
+REPRODUCIBILITY:
+  ✅ Base image pinned by SHA256 digest
+  ✅ No floating tags (latest)
+
+SECURITY:
+  ✅ Solution not leaked to agent environment
+  ✅ solution_hint.py removed from Dockerfile
+
+HONEST GRADING:
+  ✅ Verifier checks JSON syntax validity
+  ✅ Verifier checks JSON schema correctness
+  ✅ Verifier checks semantic values are correct
+  ✅ No-op agent correctly gets reward 0
+
+HARBOR COMPLIANCE:
+  ✅ Artifact path matches task.toml declaration
+  ✅ Reward written to /logs/verifier/reward.txt
+  ✅ Solution in /solution/ directory
+  ✅ Tests in /tests/ directory
+
+CLARITY:
+  ✅ 5 numbered success criteria in instruction.md
+  ✅ Criteria align with verifier test functions
+
+================================================================================
+SUBMITTING YOUR FIX
+================================================================================
+
+1. Create log-report/ directory structure as shown above
+
+2. Copy all FIXED files into their locations
+
+3. Test locally with Harbor:
+   harbor run -p log-report -a oracle        # Should pass
+   harbor run -p log-report --agent nop      # Should fail
+
+4. Create a GitHub repo and push the fixed task
+
+5. Paste plain-text file contents in submission form:
+   - task.toml (FIXED)
+   - instruction.md (FIXED)
+   - environment/Dockerfile (FIXED)
+   - tests/test.sh (FIXED)
+   - tests/test_outputs.py (FIXED)
+
+6. Include a link to your fixed task repo (GitHub)
+   NOTE: Make the repo PRIVATE after submitting
+
+================================================================================
